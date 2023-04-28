@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define bibliotecas(tags) usadas na página -->
+<!-- Pode se usar elementos HTML padrão misturados com os JSF e Primefaces sem problemas -->
+<!-- As tags ui, h e f são do JSF -->
+<!-- ui são para elementos de organização (templates) e automatização (laços e condicionais) -->
+<!-- h são reimplementações de elementos HTML padrão que fornecem algumas funções/facilidades adicionais -->
+<!-- f são para comunicação/transmição de parâmetros entre páginas e para controle de requisições AJAX -->
+<!-- A tag p são do Primefaces, ela reimplementa as tags h com ainda mais funcionalidades e fornece tags adicionais com recursos avançados de Javascript e CSS embutidos -->
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    template="/WEB-INF/templates/default.xhtml">
+    
+    <!-- Usado para definir uso do Template -->
+    <!-- O template só serve para uma melhor organização do código e para evitar a repetição de código -->
+    <ui:define name="content">
+    
+    	<!-- Define formulário para Dialogs (elementos estilo Pop-up) -->
+    	<!-- Lembre-se que o uso de formulários só não é necessário para elementos que são estáticos (sem ação, animação, conteúdo dinâmico) -->     
+        <h:form id="dialogs">
+        	<p:growl id="messages"/>
+	        <p:dialog header="Nova Pessoa" showEffect="fade" modal="true" widgetVar="pessoaDialog" responsive="true">   
+	            <p:outputPanel id="pessoa-conteudo-dialog" class="ui-fluid">
+	                <p:outputPanel rendered="#{not empty pessoaController.pessoa}">
+	                    <div class="field">
+	                        <p:outputLabel for="cpf">Cpf Pessoa</p:outputLabel>
+	                        <p:inputText id="cpf" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="nome">Nome Pessoa</p:outputLabel>
+	                        <p:inputText id="nome" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="nome_social">Nome Social Pessoa</p:outputLabel>
+	                        <p:inputText id="nome_social" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="altura">Altura Pessoa</p:outputLabel>
+	                        <p:inputText id="altura" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="massa">Massa Pessoa</p:outputLabel>
+	                        <p:inputText id="massa" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="genero">Genero Pessoa</p:outputLabel>
+	                        <p:inputText id="genero" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="idade">Idade Pessoa</p:outputLabel>
+	                        <p:inputText id="idade" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="email">Email Pessoa</p:outputLabel>
+	                        <p:inputText id="email" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="telefone">Telefone Pessoa</p:outputLabel>
+	                        <p:inputText id="telefone" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                    <div class="field">
+	                        <p:outputLabel for="endereco">Endereço Pessoa</p:outputLabel>
+	                        <p:inputText id="endereco" value="#{pessoaController.pessoa.cpf}" required="true" disabled="#{not pessoaController.rendNovoCadastro}" />
+	                    </div>
+	                </p:outputPanel>
+	            </p:outputPanel>
+	
+	            <f:facet name="footer">
+	                <p:commandButton value="Salvar Novo" icon="pi pi-check" actionListener="#{pessoaController.salvarNovo()}"
+	                    update="pessoa-conteudo-dialog dialogs:messages form:dt-pessoas" process="pessoa-conteudo-dialog @this" rendered="#{pessoaController.rendNovoCadastro}"/>
+	                <p:commandButton value="Salvar Alteração" icon="pi pi-check" actionListener="#{pessoaController.salvarAlteracao()}"
+	                    update="pessoa-conteudo-dialog dialogs:messages form:dt-pessoas" process="pessoa-conteudo-dialog @this" rendered="#{not pessoaController.rendNovoCadastro}"/>
+	                <p:commandButton value="Cancelar" icon="pi pi-times" onclick="PF('pessoaDialog').hide()" class="ui-button-secondary" type="button" />
+	            </f:facet>
+	        </p:dialog>
+
+	        <p:confirmDialog widgetVar="removerPessoaDialog" showEffect="fade" width="300"
+	            message="Desejar remover este usuário?" header="Confirm" severity="warn">
+	            <p:commandButton value="Sim" icon="pi pi-check" actionListener="#{pessoaController.remover}"
+	                process="@this" oncomplete="PF('removerPessoaDialog').hide()" />
+	            <p:commandButton value="Não" type="button" styleClass="ui-button-secondary" icon="pi pi-times" onclick="PF('removerPessoaDialog').hide()" />
+	        </p:confirmDialog>
+		
+        </h:form>     
+        
+        <!-- Define formulário principal -->  
+        <h:form id="form">
+            <p:growl id="messages" showDetail="true" />
+            
+            <p:toolbar>
+	            <p:toolbarGroup>
+	                <p:commandButton value="Novo" icon="pi pi-plus" actionListener="#{pessoaController.novoCadastro}"
+	                    update=":dialogs" oncomplete="PF('pessoaDialog').show()"
+	                    styleClass="ui-button-success" style="margin-right: .5rem">
+	                    <p:resetInput target=":dialogs:pessoa-conteudo-dialog" />
+	                </p:commandButton>
+	            </p:toolbarGroup>
+	        </p:toolbar>
+	
+	        <p:dataTable id="dt-pessoas" widgetVar="dtPessoas" var="pessoa" value="#{pessoaController.listaPessoa}">
+	            <f:facet name="header">
+	                <div>
+	                    <span style="font-weight: bold">Pessoas</span>
+	                </div>
+	            </f:facet>
+	
+	            <p:column headerText="Id Pessoa">
+	                <h:outputText value="#{pessoa.idPessoa}" />
+	            </p:column>
+	            <p:column headerText="Descrição + Tamanho">
+	                <h:outputText value="#{pessoa.descricao} com tamanho: #{pessoa.tamanho}" />
+	            </p:column>
+	            <p:column headerText="Tamanho">
+	                <h:outputText value="#{pessoa.tamanho}" />
+	            </p:column>
+
+	            <p:column>
+	            	<!-- Cuidado com botões que usam AJAX -->
+	            	<!-- process indica qual elemento do formulário será processado (padrão é todo o formulário), @this é só o próprio elemento -->
+	            	<!-- update informa qual elemento será atualizado (renderizado novamente) ao finalizar ação -->
+	            	<!-- é possível disparar ações para diversos eventos Javascript, deve-se cuidar a ordem da resolução dos mesmos -->
+	            	<!-- como regra geral a prioridade de processamento é a seguinte (eventos on... - oncomplete, onclick, onblur, actionListener, action, oncomplete no final) -->
+	            	<!-- PF é usado para chamada de função Javascript de algum elemento do Primefaces -->
+	                <p:commandButton icon="pi pi-pencil" update=":dialogs" 
+	                    oncomplete="PF('pessoaDialog').show()" action="#{pessoaController.alterarCadastro()}"
+	                    styleClass="edit-button rounded-button ui-button-success" process="@this">
+	                    <f:setPropertyActionListener value="#{pessoa}" target="#{pessoaController.pessoa}" />
+	                    <p:resetInput target=":dialogs:pessoa-conteudo-dialog" />
+	                </p:commandButton>
+	                <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+	                                 process="@this" oncomplete="PF('removerPessoaDialog').show()">
+	                    <f:setPropertyActionListener value="#{pessoa}" target="#{pessoaController.pessoa}" />
+	                </p:commandButton>
+	            </p:column>
+	
+	        </p:dataTable>
+	    </h:form>
+    
+    </ui:define>
+</ui:composition>
